@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
-project(mylib
+set(CMAKE_CXX_STANDARD 20)
+project(mnfs
     VERSION 1.0.0
     DESCRIPTION "Template for C++ library built with CMake"
     LANGUAGES CXX)
@@ -14,12 +15,12 @@ include(GNUInstallDirs)
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" is_top_level)
 
 # MYLIB_SHARED_LIBS option (undefined by default) can be used to force shared/static build
-option(MYLIB_BUILD_TESTS "Build mylib tests" OFF)
-option(MYLIB_BUILD_EXAMPLES "Build mylib examples" OFF)
-option(MYLIB_BUILD_DOCS "Build mylib documentation" OFF)
-option(MYLIB_INSTALL "Generate target for installing mylib" ${is_top_level})
-set_if_undefined(MYLIB_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/mylib" CACHE STRING
-    "Install path for mylib package-related CMake files")
+option(MYLIB_BUILD_TESTS "Build mnfs tests" OFF)
+option(MYLIB_BUILD_EXAMPLES "Build mnfs examples" OFF)
+option(MYLIB_BUILD_DOCS "Build mnfs documentation" OFF)
+option(MYLIB_INSTALL "Generate target for installing mnfs" ${is_top_level})
+set_if_undefined(MYLIB_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/mnfs" CACHE STRING
+    "Install path for mnfs package-related CMake files")
 
 if(DEFINED MYLIB_SHARED_LIBS)
     set(BUILD_SHARED_LIBS ${MYLIB_SHARED_LIBS})
@@ -33,17 +34,17 @@ endif()
 set_if_undefined(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set_if_undefined(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 
-add_library(mylib) # initialized below
-add_library(mylib::mylib ALIAS mylib)
+add_library(mnfs) # initialized below
+add_library(mnfs::mnfs ALIAS mnfs)
 
 #----------------------------------------------------------------------------------------------------------------------
-# mylib dependencies
+# mnfs dependencies
 #----------------------------------------------------------------------------------------------------------------------
 
 # Search for your dependencies here
 
 #----------------------------------------------------------------------------------------------------------------------
-# mylib sources
+# mnfs sources
 #----------------------------------------------------------------------------------------------------------------------
 
 include(GenerateExportHeader)
@@ -53,67 +54,67 @@ if(NOT BUILD_SHARED_LIBS)
     set(export_file_name "export_static.h")
 endif()
 
-generate_export_header(mylib EXPORT_FILE_NAME include/mylib/${export_file_name})
+generate_export_header(mnfs EXPORT_FILE_NAME include/mnfs/${export_file_name})
 
 set(sources
-    include/mylib/export.h
-    include/mylib/mylib.h
-    src/mylib.cpp)
+    include/mnfs/derivative.h
+    include/mnfs/export.h
+    src/derivative.cpp)
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${sources})
 
 #----------------------------------------------------------------------------------------------------------------------
-# mylib target
+# mnfs target
 #----------------------------------------------------------------------------------------------------------------------
 
 include(CMakePackageConfigHelpers)
 
-target_sources(mylib PRIVATE ${sources})
-target_compile_definitions(mylib PUBLIC "$<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:MYLIB_STATIC_DEFINE>")
+target_sources(mnfs PRIVATE ${sources})
+target_compile_definitions(mnfs PUBLIC "$<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:MYLIB_STATIC_DEFINE>")
 
-target_include_directories(mylib
+target_include_directories(mnfs
     PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>")
 
-set_target_properties(mylib PROPERTIES
+set_target_properties(mnfs PROPERTIES
     SOVERSION ${PROJECT_VERSION_MAJOR}
     VERSION ${PROJECT_VERSION})
 
 if(MYLIB_INSTALL AND NOT CMAKE_SKIP_INSTALL_RULES)
-    configure_package_config_file(cmake/mylib-config.cmake.in mylib-config.cmake
+    configure_package_config_file(cmake/mnfs-config.cmake.in mnfs-config.cmake
         INSTALL_DESTINATION "${MYLIB_INSTALL_CMAKEDIR}")
 
-    write_basic_package_version_file(mylib-config-version.cmake
+    write_basic_package_version_file(mnfs-config-version.cmake
         COMPATIBILITY SameMajorVersion)
 
-    install(TARGETS mylib EXPORT mylib_export
-        RUNTIME COMPONENT mylib
-        LIBRARY COMPONENT mylib NAMELINK_COMPONENT mylib-dev
-        ARCHIVE COMPONENT mylib-dev
+    install(TARGETS mnfs EXPORT mnfs_export
+        RUNTIME COMPONENT mnfs
+        LIBRARY COMPONENT mnfs NAMELINK_COMPONENT mnfs-dev
+        ARCHIVE COMPONENT mnfs-dev
         INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
     install(DIRECTORY include/
         TYPE INCLUDE
-        COMPONENT mylib-dev)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/include/mylib/${export_file_name}"
-        COMPONENT mylib-dev
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/mylib")
+        COMPONENT mnfs-dev)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/include/mnfs/${export_file_name}"
+        COMPONENT mnfs-dev
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/mnfs")
 
-    set(targets_file "mylib-shared-targets.cmake")
+    set(targets_file "mnfs-shared-targets.cmake")
 
     if(NOT BUILD_SHARED_LIBS)
-        set(targets_file "mylib-static-targets.cmake")
+        set(targets_file "mnfs-static-targets.cmake")
     endif()
 
-    install(EXPORT mylib_export
-        COMPONENT mylib-dev
+    install(EXPORT mnfs_export
+        COMPONENT mnfs-dev
         FILE "${targets_file}"
         DESTINATION "${MYLIB_INSTALL_CMAKEDIR}"
-        NAMESPACE mylib::)
+        NAMESPACE mnfs::)
 
     install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/mylib-config.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/mylib-config-version.cmake"
-        COMPONENT mylib-dev
+        "${CMAKE_CURRENT_BINARY_DIR}/mnfs-config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/mnfs-config-version.cmake"
+        COMPONENT mnfs-dev
         DESTINATION "${MYLIB_INSTALL_CMAKEDIR}")
 
     if(MSVC)
@@ -121,16 +122,16 @@ if(MYLIB_INSTALL AND NOT CMAKE_SKIP_INSTALL_RULES)
         set(pdb_file_destination "")
 
         if(BUILD_SHARED_LIBS)
-            set(pdb_file "$<TARGET_PDB_FILE:mylib>")
+            set(pdb_file "$<TARGET_PDB_FILE:mnfs>")
             set(pdb_file_destination "${CMAKE_INSTALL_BINDIR}")
         else()
             # TARGET_PDB_FILE does not work for pdb file generated for static library build, determining it manually
-            set(pdb_file "$<TARGET_FILE_DIR:mylib>/$<TARGET_FILE_PREFIX:mylib>$<TARGET_FILE_BASE_NAME:mylib>.pdb")
+            set(pdb_file "$<TARGET_FILE_DIR:mnfs>/$<TARGET_FILE_PREFIX:mnfs>$<TARGET_FILE_BASE_NAME:mnfs>.pdb")
             set(pdb_file_destination "${CMAKE_INSTALL_LIBDIR}")
         endif()
 
         install(FILES "${pdb_file}"
-            COMPONENT mylib-dev
+            COMPONENT mnfs-dev
             CONFIGURATIONS Debug RelWithDebInfo
             DESTINATION "${pdb_file_destination}"
             OPTIONAL)

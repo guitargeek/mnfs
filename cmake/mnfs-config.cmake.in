@@ -1,8 +1,8 @@
-# CMake package config file for mylib library.
+# CMake package config file for mnfs library.
 #
 # The following target is imported:
 #
-#   mylib::mylib
+#   mnfs::mnfs
 #
 # Type of target to import (static or shared) is determined by the following algorithm:
 #
@@ -20,16 +20,16 @@
 @PACKAGE_INIT@
 
 macro(import_targets type)
-    if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/mylib-${type}-targets.cmake")
-        set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "mylib ${type} libraries were requested but not found")
+    if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/mnfs-${type}-targets.cmake")
+        set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "mnfs ${type} libraries were requested but not found")
         set(${CMAKE_FIND_PACKAGE_NAME}_FOUND OFF)
         return()
     endif()
 
-    include("${CMAKE_CURRENT_LIST_DIR}/mylib-${type}-targets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/mnfs-${type}-targets.cmake")
 endmacro()
 
-if(NOT TARGET mylib::mylib)
+if(NOT TARGET mnfs::mnfs)
     set(type "")
 
     if(DEFINED MYLIB_SHARED_LIBS)
@@ -38,15 +38,15 @@ if(NOT TARGET mylib::mylib)
         else()
             set(type "static")
         endif()
-    elseif(BUILD_SHARED_LIBS AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/mylib-shared-targets.cmake")
+    elseif(BUILD_SHARED_LIBS AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/mnfs-shared-targets.cmake")
         set(type "shared")
-    elseif(EXISTS "${CMAKE_CURRENT_LIST_DIR}/mylib-static-targets.cmake")
+    elseif(EXISTS "${CMAKE_CURRENT_LIST_DIR}/mnfs-static-targets.cmake")
         set(type "static")
     else()
         set(type "shared")
     endif()
 
     import_targets(${type})
-    check_required_components(mylib)
-    message("-- Found ${type} mylib (version ${${CMAKE_FIND_PACKAGE_NAME}_VERSION})")
+    check_required_components(mnfs)
+    message("-- Found ${type} mnfs (version ${${CMAKE_FIND_PACKAGE_NAME}_VERSION})")
 endif()

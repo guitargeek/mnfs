@@ -1,1 +1,2 @@
-add_subdirectory(add)
+add_subdirectory(gradient)
+add_subdirectory(newton)

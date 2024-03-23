@@ -1,9 +1,9 @@
-#include <mylib/mylib.h>
+#include <mnfs/mnfs.h>
 
-namespace mylib {
+namespace mnfs {
 
 int add(int a, int b)
 {
-    return a + b;
+   return a + b;
 }
-} // namespace mylib
+} // namespace mnfs
