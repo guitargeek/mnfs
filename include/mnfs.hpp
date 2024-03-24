@@ -1,7 +1,8 @@
-#ifndef mnfs_derivative_h
-#define mnfs_derivative_h
+#ifndef mnfs_hpp
+#define mnfs_hpp
 
 #include <functional>
+#include <span>
 
 namespace mnfs {
 
@@ -22,6 +23,15 @@ struct DerivativeState {
 DerivativeState update_derivative(DerivativeState prev, std::function<double(double)> func, double x,
                                   DerivativeOptions const &opts = {});
 
+struct LineSearchResult {
+   double x = 0.;
+   double fval = 0.;
+};
+
+LineSearchResult line_search(std::function<double(double)> func, double xmin, double gdel);
+
+double line_search_xmin(std::span<const double> params, std::span<const double> step);
+
 } // namespace mnfs
 
-#endif // mnfs_derivative_h
+#endif // mnfs_hpp

@@ -1,4 +1,4 @@
-#include <mnfs/derivative.h>
+#include <mnfs.hpp>
 
 #include <limits>
 #include <cmath>

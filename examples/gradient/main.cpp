@@ -1,4 +1,4 @@
-#include <mnfs/derivative.h>
+#include <mnfs.hpp>
 
 #include <iostream>
 #include <cmath>
@@ -40,7 +40,6 @@ GradientValue update_gradient(Function func, std::span<const double> params, std
 
       double error_def = 1.0;
 
-
       // TODO: when we support parameters with limits, this logic needs to be
       // updated such that the errors are clipped by the limits if the
       // parameter is near it (see InitialGradientCalculator).
@@ -80,7 +79,7 @@ int main(int, char *[])
    std::vector<double> params{2.0, 3.0};
    std::vector<double> param_errors{0.1, 0.1};
 
-   //GradientValue grad{{20., 20.}, {200., 200.}, {0.01, 0.01}};
+   // GradientValue grad{{20., 20.}, {200., 200.}, {0.01, 0.01}};
 
    GradientValue grad = update_gradient(func, params, param_errors);
 

@@ -57,9 +57,9 @@ endif()
 generate_export_header(mnfs EXPORT_FILE_NAME include/mnfs/${export_file_name})
 
 set(sources
-    include/mnfs/derivative.h
-    include/mnfs/export.h
-    src/derivative.cpp)
+    include/mnfs.hpp
+    src/derivative.cpp
+    src/line_search.cpp)
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${sources})
 
 #----------------------------------------------------------------------------------------------------------------------

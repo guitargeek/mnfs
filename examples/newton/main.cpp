@@ -1,4 +1,4 @@
-#include <mnfs/derivative.h>
+#include <mnfs.hpp>
 
 #include <iostream>
 #include <armadillo>
@@ -124,7 +124,7 @@ auto edm(Function func, Gradient func_grad, std::span<const double> params) -> d
    return arma::mat{0.5 * grad_vec.t() * arma::inv(hess_mat) * grad_vec}(0, 0);
 }
 
-auto newton_stepper(Function func, Gradient func_grad, double gamma)
+auto newton_stepper(Function func, Gradient func_grad)
    -> std::function<void(std::span<double> out, std::span<const double> params)>
 {
    const auto func_hess = num_hess(func_grad);
@@ -140,9 +140,7 @@ auto newton_stepper(Function func, Gradient func_grad, double gamma)
       arma::vec grad_vec{grad.data(), params.size(), false};
       arma::mat hess_mat{hess.data(), params.size(), params.size(), false};
 
-      arma::vec rhs = hess_mat * params_vec - gamma * grad_vec;
-
-      solve(out_vec, hess_mat, rhs);
+      solve(out_vec, hess_mat, -grad_vec);
    };
 }
 
@@ -152,7 +150,7 @@ double func(std::span<const double> params)
 {
    const double x = params[0];
    const double y = params[1];
-   return x * x * x * x + y * y * y * y;
+   return x * x * x * x + 2 * y * y * y * y;
 }
 
 int main()
@@ -160,15 +158,33 @@ int main()
    std::vector<double> params{2.0, 3.0};
    std::vector<double> param_errors{0.1, 0.1};
 
+   std::vector<double> step{0.0, 0.0};
+
    const auto func_grad = mnfs::num_grad(func, param_errors);
 
-   auto newton_step = mnfs::newton_stepper(func, func_grad, 1.0);
+   auto newton_step = mnfs::newton_stepper(func, func_grad);
 
    double edm = mnfs::edm(func, func_grad, params);
 
    fmt::println("init  : {}", params);
    for (int i = 0; i < 20; ++i) {
-      newton_step(params, params);
+      newton_step(step, params);
+
+      std::vector<double> xVals(params.size());
+      auto line_func = [&](double alpha) -> double {
+         for (std::size_t i = 0; i < params.size(); ++i) {
+            xVals[i] = params[i] + alpha * step[i];
+         }
+         return func(xVals);
+      };
+
+      double alpha_min = mnfs::line_search_xmin(params, step);
+      double alpha = mnfs::line_search(line_func, alpha_min, /*gdel*/ 0.0).x;
+
+      for (std::size_t j = 0; j < params.size(); ++j) {
+         params[j] += alpha * step[j];
+      }
+
       fmt::println("step {}: {}", i, params);
       edm = mnfs::edm(func, func_grad, params);
       if (edm < 1e-12)
