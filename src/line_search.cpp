@@ -1,11 +1,8 @@
 #include <mnfs.hpp>
 
-#include <cmath>
+#include "mnfs_common.hpp"
 
 namespace {
-
-constexpr double eps_machine = 4. * std::numeric_limits<double>::epsilon();
-constexpr double eps_machine_2 = 2. * std::sqrt(eps_machine);
 
 struct PointXY {
    double x = 0.0;

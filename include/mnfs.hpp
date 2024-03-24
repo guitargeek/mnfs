@@ -6,11 +6,19 @@
 
 namespace mnfs {
 
+struct GradientValue {
+   std::vector<double> grad;
+   std::vector<double> g2;
+   std::vector<double> step;
+};
+
+void initialize_inv_hessian(std::span<double> out, GradientValue const &grad);
+
 struct DerivativeOptions {
    double error_level = 1.0;
    unsigned int ncycle = 3;
-   double step_tolerance = 0.1;  // strategy 0: 0.5, 1: 0.3, 2: 0.1
-   double grad_tolerance = 0.02; // strategy 0: 0.1, 1: 0.05, 2: 0.02
+   double step_tolerance = 0.3;  // strategy 0: 0.5, 1: 0.3, 2: 0.1
+   double grad_tolerance = 0.05; // strategy 0: 0.1, 1: 0.05, 2: 0.02
    bool has_limits = false;
 };
 

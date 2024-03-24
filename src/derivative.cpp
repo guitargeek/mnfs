@@ -1,15 +1,11 @@
 #include <mnfs.hpp>
 
-#include <limits>
-#include <cmath>
+#include "mnfs_common.hpp"
 
 mnfs::DerivativeState mnfs::update_derivative(DerivativeState prev, std::function<double(double)> func, double x,
                                               DerivativeOptions const &opts)
 {
    const double val = func(x);
-
-   constexpr double eps_machine = 4. * std::numeric_limits<double>::epsilon();
-   constexpr double eps_machine_2 = 2. * std::sqrt(eps_machine);
 
    const double dfmin = 8. * eps_machine_2 * (val + opts.error_level);
    const double vrysml = 8. * eps_machine * eps_machine;
